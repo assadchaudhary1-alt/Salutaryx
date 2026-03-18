@@ -1,0 +1,1925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salutaryx — Post-Surgical Recovery Monitoring Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #0D9488;
+  --primary-hover: #0B8278;
+  --secondary: #134E4A;
+  --accent: #F0FDFA;
+  --dark: #1E293B;
+  --light: #F8FAFC;
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-600: #4B5563;
+  --gray-700: #374151;
+  --gray-800: #1F2937;
+  --white: #FFFFFF;
+  --red-muted: #DC2626;
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-data: 'IBM Plex Sans', 'Inter', sans-serif;
+  --max-width: 1200px;
+  --section-padding: 96px 24px;
+  --section-padding-mobile: 64px 16px;
+  --transition: 0.3s ease;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font-primary);
+  color: var(--dark);
+  line-height: 1.7;
+  background: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: var(--primary); text-decoration: none; transition: color var(--transition); }
+a:hover { color: var(--secondary); }
+
+h1, h2, h3, h4, h5, h6 { line-height: 1.3; font-weight: 600; color: var(--dark); }
+
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+/* ===== SECTION UTILITY ===== */
+.section { padding: var(--section-padding); }
+.section--gray { background: var(--gray-50); }
+.section--accent { background: var(--accent); }
+.section--dark { background: var(--dark); color: var(--white); }
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.section-title {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 700;
+  margin-bottom: 16px;
+  max-width: 720px;
+}
+
+.section-subtitle {
+  font-size: 1.05rem;
+  color: var(--gray-600);
+  max-width: 640px;
+  line-height: 1.75;
+  margin-bottom: 48px;
+}
+
+.section-header { text-align: center; margin-bottom: 56px; }
+.section-header .section-title { margin-left: auto; margin-right: auto; }
+.section-header .section-subtitle { margin-left: auto; margin-right: auto; }
+
+/* ===== FADE-IN ANIMATIONS ===== */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-in-delay-1 { transition-delay: 0.1s; }
+.fade-in-delay-2 { transition-delay: 0.2s; }
+.fade-in-delay-3 { transition-delay: 0.3s; }
+.fade-in-delay-4 { transition-delay: 0.4s; }
+.fade-in-delay-5 { transition-delay: 0.5s; }
+.fade-in-delay-6 { transition-delay: 0.6s; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: var(--font-primary);
+  border-radius: 6px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.btn--primary {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+.btn--primary:hover {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: var(--white);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.btn--outline:hover {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.btn--small { padding: 8px 20px; font-size: 0.8rem; }
+
+.btn--nav {
+  padding: 8px 22px;
+  font-size: 0.82rem;
+}
+
+/* ===== NAVIGATION ===== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gray-200);
+  transition: box-shadow var(--transition);
+}
+
+.nav.scrolled { box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06); }
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 68px;
+}
+
+.nav__brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--dark);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.nav__brand span { color: var(--primary); }
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav__links a {
+  font-size: 0.85rem;
+  font-weight: 450;
+  color: var(--gray-600);
+  text-decoration: none;
+  transition: color var(--transition);
+  position: relative;
+}
+.nav__links a:hover { color: var(--primary); }
+.nav__links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--primary);
+  transition: width var(--transition);
+}
+.nav__links a:hover::after { width: 100%; }
+
+.nav__cta { margin-left: 8px; }
+
+.nav__hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+.nav__hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--dark);
+  border-radius: 2px;
+  transition: all var(--transition);
+}
+
+.nav__mobile {
+  display: none;
+  position: fixed;
+  top: 68px;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+.nav__mobile.active { display: block; }
+
+.nav__mobile a {
+  display: block;
+  padding: 12px 0;
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gray-100);
+}
+.nav__mobile a:last-child { border-bottom: none; }
+.nav__mobile a:hover { color: var(--primary); }
+
+.nav__mobile .btn {
+  width: 100%;
+  margin-top: 16px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .nav__links, .nav__cta { display: none; }
+  .nav__hamburger { display: flex; }
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 140px 24px 96px;
+  background: var(--white);
+  position: relative;
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.hero__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 16px;
+  display: block;
+}
+
+.hero__title {
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  color: var(--dark);
+  letter-spacing: -0.02em;
+}
+
+.hero__subtitle {
+  font-size: 1.05rem;
+  color: var(--gray-600);
+  line-height: 1.75;
+  margin-bottom: 28px;
+  max-width: 540px;
+}
+
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--accent);
+  border: 1px solid #CCFBF1;
+  border-radius: 24px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--secondary);
+  margin-bottom: 28px;
+}
+.hero__badge::before {
+  content: '';
+  display: block;
+  width: 7px;
+  height: 7px;
+  background: var(--primary);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hero__actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* ===== HERO DASHBOARD MOCKUP ===== */
+.dashboard {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+  font-family: var(--font-data);
+}
+
+.dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dashboard__title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.dashboard__patient {
+  font-size: 0.72rem;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.dashboard__period {
+  font-size: 0.7rem;
+  color: var(--gray-400);
+  background: var(--gray-50);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--gray-200);
+}
+
+.dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  padding: 14px;
+  background: var(--gray-50);
+  border-radius: 8px;
+  border: 1px solid var(--gray-100);
+}
+
+.stat-card__label {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.stat-card__value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--dark);
+  font-family: var(--font-data);
+}
+
+.stat-card__change {
+  font-size: 0.65rem;
+  color: var(--primary);
+  margin-top: 2px;
+}
+
+.dashboard__chart { position: relative; margin-bottom: 8px; }
+
+.dashboard__chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.dashboard__chart-label {
+  font-size: 0.65rem;
+  color: var(--gray-400);
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.dashboard__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gray-100);
+}
+
+.dashboard__status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+.dashboard__status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.dashboard__updated {
+  font-size: 0.65rem;
+  color: var(--gray-400);
+}
+
+@media (max-width: 900px) {
+  .hero { padding: 120px 16px 64px; }
+  .hero__grid { grid-template-columns: 1fr; gap: 48px; }
+  .dashboard { margin-top: 8px; }
+}
+
+@media (max-width: 480px) {
+  .dashboard__stats { grid-template-columns: 1fr; }
+}
+
+/* ===== PROBLEM SECTION ===== */
+.problem-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.problem-card {
+  background: var(--white);
+  border-radius: 8px;
+  padding: 32px 28px;
+  border: 1px solid var(--gray-200);
+  border-top: 3px solid var(--primary);
+  transition: box-shadow var(--transition);
+}
+.problem-card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); }
+
+.problem-card__number {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+.problem-card__title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--dark);
+}
+
+.problem-card__text {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .problem-cards { grid-template-columns: 1fr; }
+}
+
+/* ===== SOLUTION SECTION ===== */
+.solution__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.solution__text h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--dark);
+}
+
+.solution__text p {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  line-height: 1.75;
+  margin-bottom: 24px;
+}
+
+.solution__points {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.solution__points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+.solution__points li::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  background: var(--accent);
+  border: 1.5px solid var(--primary);
+  border-radius: 50%;
+  margin-top: 3px;
+  position: relative;
+}
+
+/* Pipeline Visual */
+.pipeline {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.pipeline__title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.pipeline__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pipeline__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+  padding-bottom: 28px;
+}
+
+.pipeline__step:last-child { padding-bottom: 0; }
+
+.pipeline__step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.pipeline__step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.pipeline__step-dot svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--primary);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pipeline__step-line {
+  width: 2px;
+  flex: 1;
+  background: linear-gradient(to bottom, var(--primary), #99F6E4);
+  min-height: 20px;
+  margin-top: 4px;
+}
+
+.pipeline__step:last-child .pipeline__step-line { display: none; }
+
+.pipeline__step-content { padding-top: 6px; }
+
+.pipeline__step-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 2px;
+}
+
+.pipeline__step-desc {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .solution__grid { grid-template-columns: 1fr; gap: 40px; }
+}
+
+/* ===== DIFFERENTIATORS ===== */
+.diff-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.diff-card {
+  padding: 32px 28px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  transition: all var(--transition);
+}
+.diff-card:hover {
+  border-color: #99F6E4;
+  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.08);
+}
+
+.diff-card__icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 16px;
+  color: var(--primary);
+}
+
+.diff-card__icon svg {
+  width: 40px;
+  height: 40px;
+  stroke: var(--primary);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.diff-card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--dark);
+}
+
+.diff-card__text {
+  font-size: 0.88rem;
+  color: var(--gray-600);
+  line-height: 1.65;
+}
+
+@media (max-width: 768px) {
+  .diff-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== FOR CLINICIANS ===== */
+.clinicians__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.clinicians__block h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--dark);
+}
+
+.clinicians__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.clinicians__list li {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  line-height: 1.65;
+  padding-left: 20px;
+  position: relative;
+}
+.clinicians__list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.clinicians__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 32px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--primary);
+  transition: gap var(--transition);
+}
+.clinicians__link:hover { gap: 10px; }
+
+@media (max-width: 768px) {
+  .clinicians__grid { grid-template-columns: 1fr; gap: 32px; }
+}
+
+/* ===== WHAT WE ARE NOT ===== */
+.not-list {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.not-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  line-height: 1.5;
+}
+
+.not-item:first-child { border-top: 1px solid var(--gray-200); }
+
+.not-item__icon {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.not-item__icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--red-muted);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* ===== PILOT PROGRAM ===== */
+.pilot__grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.pilot__main p {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  line-height: 1.75;
+  margin-bottom: 24px;
+}
+
+.pilot__category {
+  margin-bottom: 28px;
+}
+
+.pilot__category h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 12px;
+}
+
+.pilot__category ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pilot__category li {
+  font-size: 0.88rem;
+  color: var(--gray-600);
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.6;
+}
+.pilot__category li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.pilot__sidebar {
+  background: var(--white);
+  border: 1px solid #CCFBF1;
+  border-radius: 10px;
+  padding: 32px;
+}
+
+.pilot__sidebar h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--dark);
+}
+
+.pilot__sidebar p {
+  font-size: 0.88rem;
+  color: var(--gray-600);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .pilot__grid { grid-template-columns: 1fr; gap: 32px; }
+}
+
+/* ===== RESEARCH ===== */
+.research__content {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.research__content p {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  line-height: 1.75;
+  margin-bottom: 12px;
+}
+
+.research__placeholder {
+  margin-top: 36px;
+  padding: 28px;
+  background: var(--gray-50);
+  border: 1px dashed var(--gray-300);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.research__placeholder p {
+  font-size: 0.82rem;
+  color: var(--gray-400);
+  font-style: italic;
+}
+
+.research__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 28px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--primary);
+  transition: gap var(--transition);
+}
+.research__link:hover { gap: 10px; }
+
+/* ===== ABOUT ===== */
+.about__grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.about__mission {
+  padding: 28px;
+  background: var(--accent);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 28px;
+}
+
+.about__mission p {
+  font-size: 1rem;
+  color: var(--secondary);
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+.about__text p {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+
+.about__team {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  padding: 32px;
+}
+
+.about__team h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--dark);
+}
+
+.team-placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.team-member {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.team-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.team-avatar svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--gray-400);
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.team-info__name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.team-info__role {
+  font-size: 0.78rem;
+  color: var(--gray-500);
+}
+
+@media (max-width: 768px) {
+  .about__grid { grid-template-columns: 1fr; gap: 32px; }
+}
+
+/* ===== CONTACT / PILOT INQUIRY ===== */
+.contact__grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.contact__info p {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  line-height: 1.75;
+  margin-bottom: 20px;
+}
+
+.contact__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px;
+  background: var(--accent);
+  border: 1px solid #CCFBF1;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: var(--secondary);
+  line-height: 1.6;
+  margin-top: 24px;
+}
+
+.contact__note svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--primary);
+  fill: none;
+  stroke-width: 2;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.form {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  padding: 36px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form__row .form__group { margin-bottom: 0; }
+
+.form__label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.form__label span {
+  color: var(--gray-400);
+  font-weight: 400;
+}
+
+.form__input,
+.form__select,
+.form__textarea {
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-family: var(--font-primary);
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--dark);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+.form__input:focus,
+.form__select:focus,
+.form__textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.08);
+}
+
+.form__textarea { resize: vertical; min-height: 100px; }
+
+.form__select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.form__submit { margin-top: 8px; width: 100%; }
+
+@media (max-width: 768px) {
+  .contact__grid { grid-template-columns: 1fr; gap: 32px; }
+  .form__row { grid-template-columns: 1fr; }
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: var(--dark);
+  padding: 56px 24px 32px;
+  color: var(--gray-400);
+}
+
+.footer__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.footer__top {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 0.8fr;
+  gap: 48px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 32px;
+}
+
+.footer__brand {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+.footer__brand span { color: var(--primary); }
+
+.footer__tagline {
+  font-size: 0.82rem;
+  color: var(--gray-400);
+  line-height: 1.65;
+  max-width: 320px;
+}
+
+.footer__heading {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--gray-300);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+
+.footer__links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer__links a {
+  font-size: 0.85rem;
+  color: var(--gray-400);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.footer__links a:hover { color: var(--white); }
+
+.footer__contact-item {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  color: var(--gray-400);
+}
+
+.footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer__copy {
+  font-size: 0.78rem;
+  color: var(--gray-500);
+}
+
+.footer__legal {
+  display: flex;
+  gap: 20px;
+}
+
+.footer__legal a {
+  font-size: 0.78rem;
+  color: var(--gray-500);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.footer__legal a:hover { color: var(--gray-300); }
+
+@media (max-width: 768px) {
+  .footer__top { grid-template-columns: 1fr; gap: 32px; }
+  .footer__bottom { flex-direction: column; text-align: center; }
+}
+
+/* ===== SECTION SPACING ===== */
+@media (max-width: 768px) {
+  .section { padding: var(--section-padding-mobile); }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="#" class="nav__brand">Salutary<span>x</span></a>
+    <ul class="nav__links">
+      <li><a href="#platform">Platform</a></li>
+      <li><a href="#clinicians">For Clinicians</a></li>
+      <li><a href="#pilot">Pilot Program</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+    <a href="#contact" class="btn btn--outline btn--nav nav__cta">Inquire About a Pilot</a>
+    <button class="nav__hamburger" id="hamburger" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav__mobile" id="mobileNav">
+    <a href="#platform">Platform</a>
+    <a href="#clinicians">For Clinicians</a>
+    <a href="#pilot">Pilot Program</a>
+    <a href="#research">Research</a>
+    <a href="#about">About</a>
+    <a href="#contact" class="btn btn--primary">Inquire About a Pilot</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero__grid">
+    <div class="fade-in">
+      <span class="hero__label">Post-Surgical Recovery Monitoring</span>
+      <h1 class="hero__title">Recovery shouldn't become invisible once a patient leaves the hospital.</h1>
+      <p class="hero__subtitle">After surgery, care teams have limited visibility into how patients are progressing between discharge and follow-up. Salutaryx is designed to help fill that gap.</p>
+      <div class="hero__badge">Currently in pilot stage &mdash; seeking clinical partners</div>
+      <div class="hero__actions">
+        <a href="#pilot" class="btn btn--primary">Learn About Our Pilot Program</a>
+        <a href="#platform" class="btn btn--outline">See the Platform</a>
+      </div>
+    </div>
+    <div class="fade-in fade-in-delay-2">
+      <div class="dashboard">
+        <div class="dashboard__header">
+          <div>
+            <div class="dashboard__title">Recovery Mobility Score</div>
+            <div class="dashboard__patient">Patient ID: SRX-00417 &middot; Total Knee Arthroplasty</div>
+          </div>
+          <div class="dashboard__period">6 Weeks Post-Op</div>
+        </div>
+        <div class="dashboard__stats">
+          <div class="stat-card">
+            <div class="stat-card__label">Current Score</div>
+            <div class="stat-card__value">74</div>
+            <div class="stat-card__change">+8 from week 4</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">Trend</div>
+            <div class="stat-card__value">Improving</div>
+            <div class="stat-card__change">Consistent upward</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">vs. Baseline</div>
+            <div class="stat-card__value">+46</div>
+            <div class="stat-card__change">Above expected</div>
+          </div>
+        </div>
+        <div class="dashboard__chart">
+          <svg viewBox="0 0 480 160" xmlns="http://www.w3.org/2000/svg">
+            <!-- Grid lines -->
+            <line x1="40" y1="20" x2="460" y2="20" stroke="#F3F4F6" stroke-width="1"/>
+            <line x1="40" y1="50" x2="460" y2="50" stroke="#F3F4F6" stroke-width="1"/>
+            <line x1="40" y1="80" x2="460" y2="80" stroke="#F3F4F6" stroke-width="1"/>
+            <line x1="40" y1="110" x2="460" y2="110" stroke="#F3F4F6" stroke-width="1"/>
+            <line x1="40" y1="140" x2="460" y2="140" stroke="#F3F4F6" stroke-width="1"/>
+
+            <!-- Y-axis labels -->
+            <text x="30" y="24" text-anchor="end" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif">100</text>
+            <text x="30" y="54" text-anchor="end" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif">80</text>
+            <text x="30" y="84" text-anchor="end" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif">60</text>
+            <text x="30" y="114" text-anchor="end" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif">40</text>
+            <text x="30" y="144" text-anchor="end" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif">20</text>
+
+            <!-- X-axis labels -->
+            <text x="40" y="156" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif" text-anchor="middle">Wk 0</text>
+            <text x="110" y="156" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif" text-anchor="middle">Wk 1</text>
+            <text x="180" y="156" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif" text-anchor="middle">Wk 2</text>
+            <text x="250" y="156" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif" text-anchor="middle">Wk 3</text>
+            <text x="320" y="156" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif" text-anchor="middle">Wk 4</text>
+            <text x="390" y="156" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif" text-anchor="middle">Wk 5</text>
+            <text x="460" y="156" fill="#9CA3AF" font-size="9" font-family="IBM Plex Sans, Inter, sans-serif" text-anchor="middle">Wk 6</text>
+
+            <!-- Expected recovery baseline (dashed) -->
+            <path d="M40,132 L110,114 L180,96 L250,78 L320,63 L390,51 L460,42" stroke="#D1D5DB" stroke-width="1.5" fill="none" stroke-dasharray="6,4"/>
+
+            <!-- Actual recovery trend (solid) - patient data -->
+            <defs>
+              <linearGradient id="tealGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0D9488" stop-opacity="0.15"/>
+                <stop offset="100%" stop-color="#0D9488" stop-opacity="0.01"/>
+              </linearGradient>
+            </defs>
+            <path d="M40,130 L110,118 L180,98 L250,80 L320,62 L390,48 L460,35 L460,140 L40,140 Z" fill="url(#tealGrad)"/>
+            <path d="M40,130 L110,118 L180,98 L250,80 L320,62 L390,48 L460,35" stroke="#0D9488" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+            <!-- Data points -->
+            <circle cx="40" cy="130" r="3.5" fill="#fff" stroke="#0D9488" stroke-width="2"/>
+            <circle cx="110" cy="118" r="3.5" fill="#fff" stroke="#0D9488" stroke-width="2"/>
+            <circle cx="180" cy="98" r="3.5" fill="#fff" stroke="#0D9488" stroke-width="2"/>
+            <circle cx="250" cy="80" r="3.5" fill="#fff" stroke="#0D9488" stroke-width="2"/>
+            <circle cx="320" cy="62" r="3.5" fill="#fff" stroke="#0D9488" stroke-width="2"/>
+            <circle cx="390" cy="48" r="3.5" fill="#fff" stroke="#0D9488" stroke-width="2"/>
+            <circle cx="460" cy="35" r="4" fill="#0D9488" stroke="#fff" stroke-width="2"/>
+
+            <!-- Annotation -->
+            <line x1="250" y1="80" x2="250" y2="68" stroke="#0D9488" stroke-width="1" stroke-dasharray="2,2"/>
+            <rect x="213" y="54" width="74" height="16" rx="3" fill="#134E4A"/>
+            <text x="250" y="65" text-anchor="middle" fill="#fff" font-size="8" font-family="IBM Plex Sans, Inter, sans-serif">Above baseline</text>
+
+            <!-- Legend -->
+            <line x1="340" y1="10" x2="356" y2="10" stroke="#0D9488" stroke-width="2"/>
+            <text x="360" y="13" fill="#6B7280" font-size="8" font-family="IBM Plex Sans, Inter, sans-serif">Patient</text>
+            <line x1="405" y1="10" x2="421" y2="10" stroke="#D1D5DB" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <text x="425" y="13" fill="#6B7280" font-size="8" font-family="IBM Plex Sans, Inter, sans-serif">Expected</text>
+          </svg>
+        </div>
+        <div class="dashboard__footer">
+          <div class="dashboard__status">On track &mdash; recovery progressing</div>
+          <div class="dashboard__updated">Last updated: 2h ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE PROBLEM ===== -->
+<section class="section section--gray" id="problem">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">The Challenge</span>
+      <h2 class="section-title">The Visibility Gap in Post-Surgical Recovery</h2>
+      <p class="section-subtitle">Between discharge and follow-up, care teams often have limited structured data about how a patient is progressing. Salutaryx is designed to address this gap.</p>
+    </div>
+    <div class="problem-cards">
+      <div class="problem-card fade-in fade-in-delay-1">
+        <div class="problem-card__number">01</div>
+        <h3 class="problem-card__title">Limited insight between visits</h3>
+        <p class="problem-card__text">Recovery happens at home, away from clinical observation. Without structured data from between appointments, care teams rely on patient recall and scheduled check-ins.</p>
+      </div>
+      <div class="problem-card fade-in fade-in-delay-2">
+        <div class="problem-card__number">02</div>
+        <h3 class="problem-card__title">Broad follow-up scheduling</h3>
+        <p class="problem-card__text">Appointments are typically scheduled based on procedural timelines and general assumptions rather than individual patient recovery data.</p>
+      </div>
+      <div class="problem-card fade-in fade-in-delay-3">
+        <div class="problem-card__number">03</div>
+        <h3 class="problem-card__title">Delayed signal detection</h3>
+        <p class="problem-card__text">Early signs of recovery complications or slower-than-expected progress may not surface until the next scheduled visit, limiting opportunities for timely intervention.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE SOLUTION ===== -->
+<section class="section" id="platform">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">The Platform</span>
+      <h2 class="section-title">Structured Recovery Visibility &mdash; Without Additional Hardware</h2>
+      <p class="section-subtitle">Salutaryx uses passive smartphone sensor data to help care teams understand post-surgical recovery trajectories.</p>
+    </div>
+    <div class="solution__grid">
+      <div class="solution__text fade-in">
+        <h3>How Salutaryx supports recovery monitoring</h3>
+        <p>The platform collects passive sensor data from the patient's existing smartphone to generate structured recovery trends. These trends are surfaced in a clinician-facing dashboard designed to integrate into existing review workflows.</p>
+        <p>Salutaryx is not intended to replace clinical judgment. It provides an additional data layer to support decision-making during the recovery period.</p>
+        <ul class="solution__points">
+          <li><strong>Smartphone-only</strong> &mdash; no wearables or additional hardware required</li>
+          <li><strong>Passive collection</strong> &mdash; no routine manual data entry from patients</li>
+          <li><strong>Clinician-supportive</strong> &mdash; supplements judgment, does not replace it</li>
+          <li><strong>Workflow-aware</strong> &mdash; designed to work alongside existing care pathways</li>
+        </ul>
+      </div>
+      <div class="fade-in fade-in-delay-2">
+        <div class="pipeline">
+          <div class="pipeline__title">Data Flow</div>
+          <div class="pipeline__steps">
+            <div class="pipeline__step">
+              <div class="pipeline__step-indicator">
+                <div class="pipeline__step-dot">
+                  <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </div>
+                <div class="pipeline__step-line"></div>
+              </div>
+              <div class="pipeline__step-content">
+                <div class="pipeline__step-label">Patient Discharge</div>
+                <div class="pipeline__step-desc">Patient is enrolled and the app is configured on their smartphone before leaving the facility.</div>
+              </div>
+            </div>
+            <div class="pipeline__step">
+              <div class="pipeline__step-indicator">
+                <div class="pipeline__step-dot">
+                  <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                </div>
+                <div class="pipeline__step-line"></div>
+              </div>
+              <div class="pipeline__step-content">
+                <div class="pipeline__step-label">Smartphone Passive Sensing</div>
+                <div class="pipeline__step-desc">Accelerometer, gyroscope, and activity data collected passively in the background without patient input.</div>
+              </div>
+            </div>
+            <div class="pipeline__step">
+              <div class="pipeline__step-indicator">
+                <div class="pipeline__step-dot">
+                  <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div class="pipeline__step-line"></div>
+              </div>
+              <div class="pipeline__step-content">
+                <div class="pipeline__step-label">Recovery Trend Analysis</div>
+                <div class="pipeline__step-desc">Raw data processed into structured mobility and activity trends, compared against recovery baselines.</div>
+              </div>
+            </div>
+            <div class="pipeline__step">
+              <div class="pipeline__step-indicator">
+                <div class="pipeline__step-dot">
+                  <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+              </div>
+              <div class="pipeline__step-content">
+                <div class="pipeline__step-label">Clinician Dashboard Review</div>
+                <div class="pipeline__step-desc">Recovery data presented in a structured dashboard for clinical review during existing workflow touchpoints.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DIFFERENTIATORS ===== -->
+<section class="section section--gray" id="differentiators">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Why Salutaryx</span>
+      <h2 class="section-title">Designed Around Clinical Reality</h2>
+      <p class="section-subtitle">Salutaryx is built to work within the constraints and realities of clinical environments, not around idealized scenarios.</p>
+    </div>
+    <div class="diff-grid">
+      <div class="diff-card fade-in fade-in-delay-1">
+        <div class="diff-card__icon">
+          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <h3 class="diff-card__title">Smartphone-Only</h3>
+        <p class="diff-card__text">No wearables, no hardware procurement, no device management. Uses the patient's existing smartphone.</p>
+      </div>
+      <div class="diff-card fade-in fade-in-delay-2">
+        <div class="diff-card__icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3 class="diff-card__title">Passive Monitoring</h3>
+        <p class="diff-card__text">No routine manual data entry required from patients. Sensor data is collected passively in the background.</p>
+      </div>
+      <div class="diff-card fade-in fade-in-delay-3">
+        <div class="diff-card__icon">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <h3 class="diff-card__title">Clinician-Supportive</h3>
+        <p class="diff-card__text">Provides structured data to support clinical judgment. Does not automate decisions or replace clinical expertise.</p>
+      </div>
+      <div class="diff-card fade-in fade-in-delay-4">
+        <div class="diff-card__icon">
+          <svg viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+        </div>
+        <h3 class="diff-card__title">Workflow-Aware</h3>
+        <p class="diff-card__text">Designed to work alongside existing care pathways and review processes without requiring new systems to adopt.</p>
+      </div>
+      <div class="diff-card fade-in fade-in-delay-5">
+        <div class="diff-card__icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3 class="diff-card__title">Pilot-Ready</h3>
+        <p class="diff-card__text">Designed for real-world evaluation in contained clinical settings. Structured for iterative feedback and assessment.</p>
+      </div>
+      <div class="diff-card fade-in fade-in-delay-6">
+        <div class="diff-card__icon">
+          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <h3 class="diff-card__title">Research-Grounded</h3>
+        <p class="diff-card__text">Built on academic work in smartphone sensing, behavioral monitoring, and activity classification research.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOR CLINICIANS ===== -->
+<section class="section" id="clinicians">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">For Clinical Teams</span>
+      <h2 class="section-title">Designed for Clinical Teams</h2>
+      <p class="section-subtitle">Salutaryx surfaces structured recovery data in a format designed to fit within existing clinical review workflows.</p>
+    </div>
+    <div class="clinicians__grid">
+      <div class="clinicians__block fade-in">
+        <h3>What data surfaces</h3>
+        <ul class="clinicians__list">
+          <li>Mobility trends over time, measured through passive smartphone sensor data</li>
+          <li>Recovery trajectory visualization compared against expected recovery baselines for the procedure</li>
+          <li>Activity pattern summaries that indicate overall functional recovery progression</li>
+          <li>Notable deviations or trend changes flagged for clinical review</li>
+        </ul>
+      </div>
+      <div class="clinicians__block fade-in fade-in-delay-2">
+        <h3>How it fits your workflow</h3>
+        <ul class="clinicians__list">
+          <li>Integrates into existing review processes rather than introducing a new system to learn</li>
+          <li>Dashboard designed for efficient scanning during pre-appointment preparation</li>
+          <li>Data presented in structured clinical format, not consumer health metrics</li>
+          <li>No alerts or interruptions &mdash; data is available when the clinician is ready to review</li>
+        </ul>
+      </div>
+    </div>
+    <div class="fade-in" style="text-align: center; margin-top: 48px;">
+      <a href="#contact" class="clinicians__link">Learn more about clinical integration <span>&rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHAT SALUTARYX IS NOT ===== -->
+<section class="section section--gray" id="transparency">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Transparency</span>
+      <h2 class="section-title">What Salutaryx Is Not</h2>
+      <p class="section-subtitle">We believe clarity about scope and limitations is essential, particularly in clinical contexts.</p>
+    </div>
+    <div class="not-list fade-in">
+      <div class="not-item">
+        <div class="not-item__icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <span>Not a diagnostic tool &mdash; Salutaryx does not diagnose conditions or provide clinical assessments</span>
+      </div>
+      <div class="not-item">
+        <div class="not-item__icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <span>Not a replacement for clinician judgment &mdash; data is supplementary, not prescriptive</span>
+      </div>
+      <div class="not-item">
+        <div class="not-item__icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <span>Not an emergency response system &mdash; not designed for acute or time-critical situations</span>
+      </div>
+      <div class="not-item">
+        <div class="not-item__icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <span>Not a consumer wellness app &mdash; designed for institutional and clinical use only</span>
+      </div>
+      <div class="not-item">
+        <div class="not-item__icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <span>Not a wearable device platform &mdash; uses only the patient's existing smartphone</span>
+      </div>
+      <div class="not-item">
+        <div class="not-item__icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <span>Not publicly available at this stage &mdash; currently seeking clinical partners for pilot evaluation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PILOT PROGRAM ===== -->
+<section class="section section--accent" id="pilot">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Pilot Program</span>
+      <h2 class="section-title">Partner With Us</h2>
+      <p class="section-subtitle">Salutaryx is not currently available for public download. We are seeking clinical and health-system partners to evaluate the platform in real-world settings.</p>
+    </div>
+    <div class="pilot__grid">
+      <div class="pilot__main fade-in">
+        <div class="pilot__category">
+          <h3>Who should consider a pilot</h3>
+          <ul>
+            <li>Health systems exploring remote recovery monitoring capabilities</li>
+            <li>Surgical programs seeking structured post-discharge patient data</li>
+            <li>Clinical innovation teams evaluating digital health tools</li>
+            <li>Rehabilitation providers looking to extend recovery visibility</li>
+          </ul>
+        </div>
+        <div class="pilot__category">
+          <h3>What a pilot involves</h3>
+          <ul>
+            <li>Contained deployment within a defined clinical cohort</li>
+            <li>Workflow evaluation to understand integration requirements</li>
+            <li>Structured clinical feedback collection throughout the pilot period</li>
+            <li>Usability assessment with clinical staff and participating patients</li>
+            <li>Collaborative evaluation of outcomes and feasibility</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pilot__sidebar fade-in fade-in-delay-2">
+        <h3>Why pilot with Salutaryx?</h3>
+        <p>Piloting provides the opportunity to evaluate passive smartphone-based recovery monitoring within your specific clinical context, patient population, and existing workflows &mdash; before committing to broader adoption.</p>
+        <p>We work collaboratively with pilot partners to ensure the platform is assessed rigorously and that feedback directly informs development.</p>
+        <a href="#contact" class="btn btn--primary" style="width: 100%; margin-top: 8px;">Inquire About a Pilot</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RESEARCH FOUNDATION ===== -->
+<section class="section" id="research">
+  <div class="container">
+    <div class="research__content fade-in">
+      <span class="section-label">Research Foundation</span>
+      <h2 class="section-title" style="margin-left: auto; margin-right: auto;">Grounded in Research</h2>
+      <p>The platform direction is grounded in academic work related to smartphone sensing, behavioral monitoring, and activity classification. Our approach draws from established research in passive sensing methodologies and their application in health contexts.</p>
+      <p>We are committed to evidence-informed development and transparent communication about what the current research does and does not support.</p>
+      <div class="research__placeholder">
+        <p>Publications and references will be listed here as they become available.</p>
+      </div>
+      <a href="#" class="research__link">View our research foundation <span>&rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section class="section section--gray" id="about">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">About</span>
+      <h2 class="section-title">About Salutaryx</h2>
+    </div>
+    <div class="about__grid">
+      <div class="fade-in">
+        <div class="about__mission">
+          <p><strong>Mission:</strong> To make post-surgical recovery more visible, more scalable, and more actionable for care teams.</p>
+        </div>
+        <div class="about__text">
+          <p>Salutaryx was founded on the observation that the post-surgical recovery period represents a significant data gap in patient care. While care teams have detailed visibility before and during surgery, recovery often proceeds with limited structured data until the next scheduled follow-up.</p>
+          <p>We are building a platform that aims to help bridge this gap using passive smartphone sensing &mdash; providing care teams with structured recovery trend data without requiring additional hardware or routine effort from patients.</p>
+          <p>We are currently in the pilot stage, working to validate our approach in collaboration with clinical partners who share our commitment to improving post-surgical recovery monitoring.</p>
+        </div>
+      </div>
+      <div class="fade-in fade-in-delay-2">
+        <div class="about__team">
+          <h3>Our Team</h3>
+          <div class="team-placeholder">
+            <div class="team-member">
+              <div class="team-avatar">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <div class="team-info__name">Founder &amp; CEO</div>
+                <div class="team-info__role">Digital Health &amp; Clinical Systems</div>
+              </div>
+            </div>
+            <div class="team-member">
+              <div class="team-avatar">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <div class="team-info__name">Chief Technology Officer</div>
+                <div class="team-info__role">Sensor Data &amp; Machine Learning</div>
+              </div>
+            </div>
+            <div class="team-member">
+              <div class="team-avatar">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <div class="team-info__name">Clinical Advisor</div>
+                <div class="team-info__role">Orthopedic Surgery &amp; Recovery</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT / PILOT INQUIRY ===== -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="section-header fade-in">
+      <span class="section-label">Get in Touch</span>
+      <h2 class="section-title">Start a Pilot Conversation</h2>
+      <p class="section-subtitle">If your organization is interested in evaluating Salutaryx in a clinical setting, we would welcome the opportunity to discuss a pilot partnership.</p>
+    </div>
+    <div class="contact__grid">
+      <div class="fade-in">
+        <div class="contact__info">
+          <p>We are actively seeking clinical and health-system partners for contained pilot deployments. The inquiry form is the best way to begin a conversation about whether a Salutaryx pilot is appropriate for your organization and clinical context.</p>
+          <p>After submitting an inquiry, a member of our team will respond within two business days to discuss your organization's needs and explore pilot feasibility.</p>
+        </div>
+        <div class="contact__note">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>Salutaryx is not currently available for public download or consumer use. This form is intended for organizations interested in clinical pilot partnerships.</span>
+        </div>
+      </div>
+      <div class="fade-in fade-in-delay-2">
+        <form class="form" onsubmit="return false;">
+          <div class="form__row">
+            <div class="form__group">
+              <label class="form__label">Full Name</label>
+              <input type="text" class="form__input" placeholder="Dr. Jane Smith">
+            </div>
+            <div class="form__group">
+              <label class="form__label">Title / Role</label>
+              <input type="text" class="form__input" placeholder="Chief of Surgery">
+            </div>
+          </div>
+          <div class="form__group">
+            <label class="form__label">Organization</label>
+            <input type="text" class="form__input" placeholder="University Health System">
+          </div>
+          <div class="form__row">
+            <div class="form__group">
+              <label class="form__label">Email</label>
+              <input type="email" class="form__input" placeholder="jane.smith@hospital.org">
+            </div>
+            <div class="form__group">
+              <label class="form__label">Phone <span>(optional)</span></label>
+              <input type="tel" class="form__input" placeholder="+1 (555) 000-0000">
+            </div>
+          </div>
+          <div class="form__group">
+            <label class="form__label">Type of Organization</label>
+            <select class="form__select">
+              <option value="" disabled selected>Select organization type</option>
+              <option value="health-system">Health System</option>
+              <option value="surgical-program">Surgical Program</option>
+              <option value="rehabilitation">Rehabilitation Provider</option>
+              <option value="innovation">Innovation Team</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form__group">
+            <label class="form__label">Message</label>
+            <textarea class="form__textarea" placeholder="Tell us about your organization and interest in a pilot partnership..."></textarea>
+          </div>
+          <button type="submit" class="btn btn--primary form__submit">Submit Pilot Inquiry</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__top">
+      <div>
+        <div class="footer__brand">Salutary<span>x</span></div>
+        <p class="footer__tagline">A pilot-stage digital health innovation for post-surgical recovery monitoring. Designed for clinical teams, built on academic sensing research.</p>
+      </div>
+      <div>
+        <div class="footer__heading">Navigation</div>
+        <ul class="footer__links">
+          <li><a href="#platform">Platform</a></li>
+          <li><a href="#clinicians">For Clinicians</a></li>
+          <li><a href="#pilot">Pilot Program</a></li>
+          <li><a href="#research">Research</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Pilot Inquiry</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__heading">Contact</div>
+        <p class="footer__contact-item">pilot@salutaryx.com</p>
+        <p class="footer__contact-item">Calgary, Alberta, Canada</p>
+        <p class="footer__contact-item" style="margin-top: 16px; font-size: 0.78rem; color: var(--gray-500);">For pilot partnership inquiries only.</p>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p class="footer__copy">&copy; 2026 Salutaryx. All rights reserved.</p>
+      <div class="footer__legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+(function() {
+  'use strict';
+
+  // Navigation scroll effect
+  const nav = document.getElementById('nav');
+  let lastScrollY = 0;
+
+  function handleScroll() {
+    const scrollY = window.scrollY;
+    if (scrollY > 20) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+    lastScrollY = scrollY;
+  }
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  // Mobile navigation toggle
+  const hamburger = document.getElementById('hamburger');
+  const mobileNav = document.getElementById('mobileNav');
+  let isOpen = false;
+
+  hamburger.addEventListener('click', function() {
+    isOpen = !isOpen;
+    mobileNav.classList.toggle('active', isOpen);
+
+    // Animate hamburger
+    const spans = hamburger.querySelectorAll('span');
+    if (isOpen) {
+      spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+      spans[1].style.opacity = '0';
+      spans[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+    } else {
+      spans[0].style.transform = '';
+      spans[1].style.opacity = '1';
+      spans[2].style.transform = '';
+    }
+  });
+
+  // Close mobile nav on link click
+  mobileNav.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      isOpen = false;
+      mobileNav.classList.remove('active');
+      const spans = hamburger.querySelectorAll('span');
+      spans[0].style.transform = '';
+      spans[1].style.opacity = '1';
+      spans[2].style.transform = '';
+    });
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function(e) {
+      var target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        var offset = 80;
+        var targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // Intersection Observer for fade-in animations
+  var fadeElements = document.querySelectorAll('.fade-in');
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    fadeElements.forEach(function(el) {
+      observer.observe(el);
+    });
+  } else {
+    // Fallback for older browsers
+    fadeElements.forEach(function(el) {
+      el.classList.add('visible');
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
